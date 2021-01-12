@@ -1,0 +1,5 @@
+<resources>
+
+    <string name="search">Search Github Repo</string>
+    <string name="recent">Recent</string>
+</resources>
