@@ -6,7 +6,7 @@ data class StatefulData<out T>(
     val error: Error?
 ) {
     companion object {
-        fun <T> success(data: T): StatefulData<T> {
+        fun <T> success(data: T?): StatefulData<T> {
            return StatefulData<T>(STATE.SUCCESS, data, null)
         }
 

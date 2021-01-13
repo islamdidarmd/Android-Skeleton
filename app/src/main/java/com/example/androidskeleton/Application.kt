@@ -15,11 +15,9 @@ class Application : android.app.Application() {
             androidContext(this@Application)
             androidLogger()
             modules(
-                listOf(
-                    networkingModule,
-                    appModule,
-                    dbModule
-                )
+                networkingModule,
+                appModule,
+                dbModule
             )
         }
     }
