@@ -6,7 +6,8 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import coil.api.load
+import coil.load
+import coil.transform.CircleCropTransformation
 import com.example.androidskeleton.R
 import com.example.androidskeleton.data.model.search.Repo
 import com.example.androidskeleton.databinding.RowRepoListBinding
@@ -32,7 +33,9 @@ class RepoAdapter(val onclick: (repo: Repo) -> Unit) :
         with(holder.binding) {
             tvRepoName.text = repo.full_name
             tvDescription.text = repo.description
-            ivAvatar.load(repo.owner.avatar_url)
+            ivAvatar.load(repo.owner.avatar_url){
+                transformations(CircleCropTransformation())
+            }
         }
     }
 

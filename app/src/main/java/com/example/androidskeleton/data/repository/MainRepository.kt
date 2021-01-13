@@ -12,6 +12,7 @@ class MainRepository(val context: Context) {
     private val api: GitHubModule by lazy {
         GitHubModule.create()
     }
+
     private val db by lazy {
         AppDatabase.getInstance(context)
     }

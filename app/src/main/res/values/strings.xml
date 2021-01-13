@@ -2,4 +2,6 @@
 
     <string name="search">Search Github Repo</string>
     <string name="recent">Recent</string>
+    <string name="no_data_available">No data available</string>
+    <string name="enter_query">Enter Query</string>
 </resources>

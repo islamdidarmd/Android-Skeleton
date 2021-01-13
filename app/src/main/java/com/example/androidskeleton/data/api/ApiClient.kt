@@ -19,6 +19,7 @@ object ApiClient {
             .readTimeout(OKHTTP_READ_TIMEOUT, TimeUnit.SECONDS)
             .build()
     }
+
     private val apiClient by lazy {
         Retrofit.Builder()
             .baseUrl(BASE_URL)

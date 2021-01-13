@@ -8,10 +8,12 @@ import com.example.androidskeleton.data.model.ApiResponse
 import com.example.androidskeleton.data.model.StatefulData
 import com.example.androidskeleton.data.model.search.Repo
 import com.example.androidskeleton.data.repository.MainRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class MainViewModel(application: android.app.Application) : AndroidViewModel(application) {
     private val TAG = "MainViewModel"
+
     private val repository by lazy {
         MainRepository(application)
     }
@@ -19,7 +21,7 @@ class MainViewModel(application: android.app.Application) : AndroidViewModel(app
     private val repos = MutableLiveData<StatefulData<ApiResponse<List<Repo>>>>()
 
     fun insertToDb(query: String) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.Default) {
             repository.insertToDb(query)
         }
     }
@@ -31,7 +33,7 @@ class MainViewModel(application: android.app.Application) : AndroidViewModel(app
     fun searchRepo(query: String): LiveData<StatefulData<ApiResponse<List<Repo>>>> {
         repos.postValue(StatefulData.loading())
 
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.Default) {
            val res = repository.searchRepo(query)
             if(res != null)repos.postValue(StatefulData.success(res))
             if(res == null)repos.postValue(StatefulData.error())

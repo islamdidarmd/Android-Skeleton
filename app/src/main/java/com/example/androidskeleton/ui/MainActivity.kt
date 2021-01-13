@@ -19,16 +19,15 @@ import com.example.androidskeleton.data.model.STATE
 import com.example.androidskeleton.data.model.search.Repo
 import com.example.androidskeleton.databinding.ActivityMainBinding
 import com.example.androidskeleton.ui.base.BaseActivity
+import com.example.androidskeleton.ui.widgets.MultiStateLayout
+import com.example.androidskeleton.util.hideSoftKeyboard
 
 class MainActivity : BaseActivity() {
     private val TAG = "MainActivity"
     private lateinit var _binding: ActivityMainBinding
 
-    private var searchView: SearchView? = null
-    private var tvAutoComplete: AutoCompleteTextView? = null
-
     private val viewModel by viewModels<MainViewModel>()
-    private var adapter: ArrayAdapter<String>? = null
+    private var autoCompleteadapter: ArrayAdapter<String>? = null
 
     private val repoAdapter = RepoAdapter { repo ->
         val share = Intent(Intent.ACTION_VIEW, Uri.parse(repo.html_url))
@@ -37,28 +36,63 @@ class MainActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         _binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(_binding.root)
 
         setSupportActionBar(_binding.appbar.toolbar)
 
         initUI()
+        initObservers()
     }
 
     private fun initUI() {
-        with(_binding.rvList) {
+        _binding.rvList.apply {
             layoutManager = LinearLayoutManager(this@MainActivity, RecyclerView.VERTICAL, false)
             addItemDecoration(DividerItemDecoration(this@MainActivity, RecyclerView.VERTICAL))
             adapter = repoAdapter
         }
+
+        _binding.tiQuery.setEndIconOnClickListener {
+            val query = _binding.atQuery.text
+
+            if (query.isNullOrEmpty()) return@setEndIconOnClickListener
+            else {
+                viewModel.searchRepo(query.toString())
+                viewModel.insertToDb(query.toString())
+            }
+        }
+
+        autoCompleteadapter = ArrayAdapter(
+            this,
+            android.R.layout.simple_list_item_1,
+            mutableListOf()
+        )
+
+        _binding.atQuery.apply {
+            setAdapter(autoCompleteadapter)
+            threshold = 1
+
+            setOnItemClickListener { parent, view, position, id ->
+                val selected = (parent.adapter.getItem(position) as String)
+                _binding.atQuery.apply {
+                    setText(selected)
+                    setSelection(selected.length)
+                }
+                hideSoftKeyboard()
+            }
+        }
+    }
+
+    private fun initObservers() {
         //observing db changes for recent histories
         viewModel.getRecent().observe(this,
             Observer { list ->
                 if (list == null) return@Observer
                 Log.d(TAG, "Recent List size ${list.size}")
 
-                adapter?.clear()
-                adapter?.addAll(list)
+                autoCompleteadapter?.clear()
+                autoCompleteadapter?.addAll(list)
             })
 
         viewModel.getRepoListLiveData().observe(this,
@@ -68,64 +102,22 @@ class MainActivity : BaseActivity() {
                 when (data.state) {
                     STATE.LOADING -> {
                         //show loading ui
-                        showProgressDialog(false)
+                        _binding.layoutList.setState(MultiStateLayout.State.LOADING)
                     }
                     STATE.SUCCESS -> {
                         //show success ui
-                        dismissProgressDialog()
                         updateList(data.data?.items)
+                        _binding.layoutList.setState(MultiStateLayout.State.CONTENT)
                     }
                     STATE.ERROR -> {
                         //show error ui
-                        dismissProgressDialog()
-                        Toast.makeText(this, "Failed to fetch repositories!", Toast.LENGTH_SHORT)
-                            .show()
+                        _binding.layoutList.setState(MultiStateLayout.State.EMPTY)
                     }
                 }
             })
     }
 
     private fun updateList(items: List<Repo>?) {
-        items?.let { repoAdapter.submitList(it) }
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.menu_main, menu)
-        initMenu(menu)
-        return true
-    }
-
-    private fun initMenu(menu: Menu?) {
-        searchView = menu?.findItem(R.id.menu_search)?.actionView as SearchView
-        searchView?.queryHint = getString(R.string.search)
-        searchView?.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextChange(newText: String?): Boolean {
-                return false
-            }
-
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                query?.let {
-                    viewModel.searchRepo(query)
-                    viewModel.insertToDb(it)
-                }
-                return false
-            }
-        })
-
-        adapter = ArrayAdapter(
-            this,
-            android.R.layout.simple_list_item_1,
-            mutableListOf("Android")
-        )
-
-        tvAutoComplete = searchView?.findViewById(androidx.appcompat.R.id.search_src_text)
-        tvAutoComplete?.setAdapter(adapter)
-        tvAutoComplete?.threshold = 1
-        tvAutoComplete?.setDropDownBackgroundResource(R.color.white)
-        tvAutoComplete?.setOnItemClickListener { parent, view, position, id ->
-            (parent.adapter.getItem(position) as String).apply {
-                searchView?.setQuery(this,true)
-            }
-        }
+        if (items != null) repoAdapter.submitList(items)
     }
 }
