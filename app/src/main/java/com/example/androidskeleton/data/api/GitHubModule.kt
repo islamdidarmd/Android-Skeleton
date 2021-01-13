@@ -9,9 +9,4 @@ import retrofit2.http.Query
 interface GitHubModule {
     @GET("search/repositories")
     suspend fun getRepos(@Query("q") query: String): Response<ApiResponse<List<Repo>>?>
-
-    companion object{
-        @JvmStatic
-        fun create(): GitHubModule = ApiClient.createNetworkCaller()
-    }
 }

@@ -1,22 +1,17 @@
 package com.example.androidskeleton.ui
 
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
+import android.content.Context
+import androidx.lifecycle.*
 import com.example.androidskeleton.data.model.ApiResponse
 import com.example.androidskeleton.data.model.StatefulData
 import com.example.androidskeleton.data.model.search.Repo
 import com.example.androidskeleton.data.repository.MainRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import retrofit2.Retrofit
 
-class MainViewModel(application: android.app.Application) : AndroidViewModel(application) {
+class MainViewModel(val repository: MainRepository) : ViewModel() {
     private val TAG = "MainViewModel"
-
-    private val repository by lazy {
-        MainRepository(application)
-    }
 
     private val repos = MutableLiveData<StatefulData<ApiResponse<List<Repo>>>>()
 

@@ -1,17 +1,19 @@
-package com.example.androidskeleton.data.api
+package com.example.androidskeleton.di
 
+import com.example.androidskeleton.data.api.GitHubModule
 import com.example.androidskeleton.util.BASE_URL
 import com.example.androidskeleton.util.OKHTTP_CONNECT_TIMEOUT
 import com.example.androidskeleton.util.OKHTTP_READ_TIMEOUT
 import com.example.androidskeleton.util.OKHTTP_WRITE_TIMEOUT
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
-object ApiClient {
-    private val okhttpClient by lazy {
+val networkingModule = module {
+    factory<OkHttpClient> {
         OkHttpClient.Builder()
             .connectTimeout(OKHTTP_CONNECT_TIMEOUT, TimeUnit.SECONDS)
             .writeTimeout(OKHTTP_WRITE_TIMEOUT, TimeUnit.SECONDS)
@@ -20,20 +22,15 @@ object ApiClient {
             .build()
     }
 
-    private val apiClient by lazy {
+    single<Retrofit> {
         Retrofit.Builder()
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
-            .client(okhttpClient)
+            .client(get())
             .build()
     }
+}
 
-    @JvmStatic
-    fun getClient(): Retrofit {
-        return apiClient
-    }
-
-    inline fun <reified T> createNetworkCaller(): T {
-        return getClient().create(T::class.java)
-    }
+inline fun <reified T> Retrofit.create(): T {
+    return create(T::class.java)
 }

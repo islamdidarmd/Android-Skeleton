@@ -7,15 +7,12 @@ import com.example.androidskeleton.data.db.AppDatabase
 import com.example.androidskeleton.data.model.ApiResponse
 import com.example.androidskeleton.data.model.search.History
 import com.example.androidskeleton.data.model.search.Repo
+import retrofit2.Retrofit
 
-class MainRepository(val context: Context) {
-    private val api: GitHubModule by lazy {
-        GitHubModule.create()
-    }
-
-    private val db by lazy {
-        AppDatabase.getInstance(context)
-    }
+class MainRepository(
+    private val db: AppDatabase,
+    private val api: GitHubModule
+) : BaseRepository() {
 
     suspend fun insertToDb(query: String) {
         db.historyDao().insert(

@@ -4,30 +4,26 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
-import android.view.Menu
 import android.widget.ArrayAdapter
-import android.widget.AutoCompleteTextView
-import android.widget.Toast
-import androidx.activity.viewModels
-import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.androidskeleton.R
 import com.example.androidskeleton.data.model.STATE
 import com.example.androidskeleton.data.model.search.Repo
 import com.example.androidskeleton.databinding.ActivityMainBinding
 import com.example.androidskeleton.ui.base.BaseActivity
 import com.example.androidskeleton.ui.widgets.MultiStateLayout
 import com.example.androidskeleton.util.hideSoftKeyboard
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : BaseActivity() {
     private val TAG = "MainActivity"
     private lateinit var _binding: ActivityMainBinding
 
-    private val viewModel by viewModels<MainViewModel>()
-    private var autoCompleteadapter: ArrayAdapter<String>? = null
+    private val viewModel by viewModel<MainViewModel>()
+
+    private var autoCompleteAdapter: ArrayAdapter<String>? = null
 
     private val repoAdapter = RepoAdapter { repo ->
         val share = Intent(Intent.ACTION_VIEW, Uri.parse(repo.html_url))
@@ -63,14 +59,14 @@ class MainActivity : BaseActivity() {
             }
         }
 
-        autoCompleteadapter = ArrayAdapter(
+        autoCompleteAdapter = ArrayAdapter(
             this,
             android.R.layout.simple_list_item_1,
             mutableListOf()
         )
 
         _binding.atQuery.apply {
-            setAdapter(autoCompleteadapter)
+            setAdapter(autoCompleteAdapter)
             threshold = 1
 
             setOnItemClickListener { parent, view, position, id ->
@@ -91,8 +87,8 @@ class MainActivity : BaseActivity() {
                 if (list == null) return@Observer
                 Log.d(TAG, "Recent List size ${list.size}")
 
-                autoCompleteadapter?.clear()
-                autoCompleteadapter?.addAll(list)
+                autoCompleteAdapter?.clear()
+                autoCompleteAdapter?.addAll(list)
             })
 
         viewModel.getRepoListLiveData().observe(this,
