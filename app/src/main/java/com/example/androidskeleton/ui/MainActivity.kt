@@ -23,7 +23,13 @@ class MainActivity : BaseActivity() {
 
     private val viewModel by viewModel<MainViewModel>()
 
-    private var autoCompleteAdapter: ArrayAdapter<String>? = null
+    private val autoCompleteAdapter by lazy {
+        ArrayAdapter<String>(
+            this,
+            android.R.layout.simple_list_item_1,
+            mutableListOf()
+        )
+    }
 
     private val repoAdapter = RepoAdapter { repo ->
         val share = Intent(Intent.ACTION_VIEW, Uri.parse(repo.html_url))
@@ -59,12 +65,6 @@ class MainActivity : BaseActivity() {
             }
         }
 
-        autoCompleteAdapter = ArrayAdapter(
-            this,
-            android.R.layout.simple_list_item_1,
-            mutableListOf()
-        )
-
         _binding.atQuery.apply {
             setAdapter(autoCompleteAdapter)
             threshold = 1
@@ -87,8 +87,8 @@ class MainActivity : BaseActivity() {
                 if (list == null) return@Observer
                 Log.d(TAG, "Recent List size ${list.size}")
 
-                autoCompleteAdapter?.clear()
-                autoCompleteAdapter?.addAll(list)
+                autoCompleteAdapter.clear()
+                autoCompleteAdapter.addAll(list)
             })
 
         viewModel.getRepoListLiveData().observe(this,

@@ -5,7 +5,5 @@ import org.koin.core.component.inject
 import retrofit2.Retrofit
 
 open class BaseRepository {
-    protected inline fun <reified T> Retrofit.createApi(): T {
-        return create(T::class.java)
-    }
+
 }

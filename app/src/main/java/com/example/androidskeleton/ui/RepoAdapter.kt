@@ -12,15 +12,17 @@ import com.example.androidskeleton.R
 import com.example.androidskeleton.data.model.search.Repo
 import com.example.androidskeleton.databinding.RowRepoListBinding
 
-object RepoDiffCallback: DiffUtil.ItemCallback<Repo>(){
-    override fun areItemsTheSame(oldItem: Repo, newItem: Repo) = oldItem.html_url == newItem.html_url
+object RepoDiffCallback : DiffUtil.ItemCallback<Repo>() {
+    override fun areItemsTheSame(oldItem: Repo, newItem: Repo) =
+        oldItem.html_url == newItem.html_url
+
     override fun areContentsTheSame(oldItem: Repo, newItem: Repo): Boolean {
-        return oldItem==newItem
+        return oldItem == newItem
     }
 }
 
 class RepoAdapter(val onclick: (repo: Repo) -> Unit) :
-    ListAdapter<Repo,RepoAdapter.ViewHolder>(RepoDiffCallback) {
+    ListAdapter<Repo, RepoAdapter.ViewHolder>(RepoDiffCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(
@@ -33,7 +35,7 @@ class RepoAdapter(val onclick: (repo: Repo) -> Unit) :
         with(holder.binding) {
             tvRepoName.text = repo.full_name
             tvDescription.text = repo.description
-            ivAvatar.load(repo.owner.avatar_url){
+            ivAvatar.load(repo.owner.avatar_url) {
                 transformations(CircleCropTransformation())
             }
         }
