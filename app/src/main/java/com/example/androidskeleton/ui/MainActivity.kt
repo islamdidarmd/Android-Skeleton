@@ -5,6 +5,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.widget.ArrayAdapter
+import androidx.activity.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -15,13 +16,15 @@ import com.example.androidskeleton.databinding.ActivityMainBinding
 import com.example.androidskeleton.ui.base.BaseActivity
 import com.example.androidskeleton.ui.widgets.MultiStateLayout
 import com.example.androidskeleton.util.hideSoftKeyboard
-import org.koin.androidx.viewmodel.ext.android.viewModel
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class MainActivity : BaseActivity() {
     private val TAG = "MainActivity"
     private lateinit var _binding: ActivityMainBinding
 
-    private val viewModel by viewModel<MainViewModel>()
+    private val viewModel by viewModels<MainViewModel>()
 
     private val autoCompleteAdapter by lazy {
         ArrayAdapter<String>(

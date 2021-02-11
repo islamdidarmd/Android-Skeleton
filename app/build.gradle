@@ -2,6 +2,7 @@ plugins {
     id 'com.android.application'
     id 'kotlin-android'
     id 'kotlin-kapt'
+    id 'dagger.hilt.android.plugin'
 }
 
 android {
@@ -15,7 +16,7 @@ android {
         versionCode 1
         versionName "1.0"
 
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "com.example.androidskeleton.CustomTestRunner"
     }
 
     buildTypes {
@@ -54,6 +55,9 @@ android {
 
     testOptions {
         unitTests.returnDefaultValues = true
+    }
+    hilt{
+        enableTransformForLocalTests = true
     }
 }
 tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
@@ -103,21 +107,23 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-common-java8:$lifecycle_version"
     implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
 
-    //Koin
-    implementation "org.koin:koin-androidx-scope:$koin_version"
-    implementation "org.koin:koin-androidx-viewmodel:$koin_version"
-    implementation "org.koin:koin-androidx-fragment:$koin_version"
+    //hilt
+    implementation "com.google.dagger:hilt-android:$hilt_version"
+    implementation 'androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha02'
+    kapt "com.google.dagger:hilt-android-compiler:$hilt_version"
 
     //Libraries for testing
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test:rules:1.3.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
     androidTestImplementation 'androidx.test.espresso:espresso-contrib:3.3.0'
+    //hilt
+    androidTestImplementation "com.google.dagger:hilt-android-testing:$hilt_version"
 
     testImplementation "junit:junit:4.13.1"
     testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.3.4'
     testImplementation 'androidx.arch.core:core-testing:2.1.0'
     testImplementation "org.mockito:mockito-core:2.25.1"
-    testImplementation "org.koin:koin-test:$koin_version"
-
+    //hilt
+    testImplementation "com.google.dagger:hilt-android-testing:$hilt_version"
 }

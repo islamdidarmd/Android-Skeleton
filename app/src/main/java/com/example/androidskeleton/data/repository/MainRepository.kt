@@ -8,8 +8,9 @@ import com.example.androidskeleton.data.model.ApiResponse
 import com.example.androidskeleton.data.model.search.History
 import com.example.androidskeleton.data.model.search.Repo
 import retrofit2.Retrofit
+import javax.inject.Inject
 
-class MainRepository(
+class MainRepository @Inject constructor(
     private val db: AppDatabase,
     private val api: GitHubModule
 ) : BaseRepository() {
